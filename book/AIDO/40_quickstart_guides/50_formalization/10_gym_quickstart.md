@@ -82,7 +82,37 @@ Then the two containers should run for a few seconds, generating steps and simul
 
 This second to last line (the one with `The average reward of 10 episodes was -50.7127. Best epi....`) - that's your self-evaluation. That's how you measure your own performance. You should try to get this number as high as possible, but also keep in mind that there is always some randomness involved. So even if you run this twice without changing anything, the number can change quite a lot. Later in development you can modify how many episodes are averaged so that you get a better estimate. Currently that's 10 but that's quite low. 
 
+## Environment
 
+- Observation: `ndarray, 120x160x3` in range `[0,255]`, corresponding to the camera image of the Duckiebot
+- Reward: `float, scalar` in range [-1000,1000], corresponding to how well your Duckiebot is staying on the right lane
+- Action: `tuple|list|ndarray, 2` in range `[-1,1]`, corresponding to the velocity and the steering angle, i.e.
+ - `[0,0]` - means stand still
+ - `[1,0]` - means full speed ahead and try to go straight
+ - `[-1,0]` - means full speed backward and try to go straight
+ - `[0.5,1]` - means half speed ahead and sharp right turn
+ - etc.
+ 
+*- "Try to go straight" because the Duckiebot is not perfect and will not always go perfectly straight. This happens in simulation as well as on the real robot.
+On top of this there is also a minimal turn radius. The Duckietbot cannot turn on the spot. This is automatically respected when trying to turn, i.e. if you do something like `[0,+1]` the Duckiebot will **not** spin around its own axis.-* 
 
+## Experiment
 
+To see what is going on, please open the file [`agent.py`](https://github.com/duckietown/gym-duckietown-agent/blob/master/agent.py). You can see that the agent code follows a standard OpenAI `gym` environment:
+
+- initialize the environment (`env.reset()`, line `21`)
+- loop until episode is over:
+ - pick an action (line `39`, currently this is a random action just for demo purposes. You will have to replace this)
+ - execute this action (`env.step(action)`, line `45`) and get the observation & reward
+ - learn from this new observation, the reward and the chosen action (not in the code)
+
+Now it is left to you to learn from the observations and pick a better action than random.
+
+Once you have changed the code in the `agent.py` file (for example you could try make it go straight by replacing line `39` with `action = [1,0]`), you can evaluate your agent's performance again by running
+
+    docker-compose pull && docker-compose up
+    
+## Debugging / Visual Evaluation
+
+TODO
 
